@@ -12,6 +12,7 @@ class Bullet:
         self.living_time = 0
 
     def dead(self, enemies):
+        # check if bullet collide with an enemy, then enemy loose life and can die
         enemies_group = pygame.sprite.Group()
         for enemy in enemies:
             enemies_group.add(enemy.sprite)
@@ -26,6 +27,8 @@ class Bullet:
         return False
 
     def collide(self, walls, cam):
+        # bullet also being deleted when enter in collision with a wall
+        # walls are rendered in relation to camera position, so we need to add it when we check collision
         for wall in walls:
             wall.sprite.rect.x += cam[0]
             wall.sprite.rect.y += cam[1]

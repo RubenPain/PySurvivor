@@ -30,6 +30,8 @@ class Game:
         self.round = 0
 
     def handling_events(self):
+        # handle all the event, attack, check if player collide with a wall, else give him a direction
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
@@ -65,22 +67,27 @@ class Game:
                 self.player.direction[1] = True
 
     def update(self):
+        # move player
         self.player.update()
         not_all_dead = False
+        # move enemy and clear the list when all are dead
         for enemy in self.map.enemies:
             if enemy.life>0:
                 not_all_dead = True
                 enemy.move(self.player, self.camera.x, self.camera.y, self.map.wallArray)
         if not not_all_dead:
             self.map.enemies.clear()
+        # check if the player is touched by enemy
         if self.player.injury(self.map.enemies):
             if self.player.life == 0:
                 self.game_over = True
                 self.play = False
+        # check if we have bullet, check their interactions and move them
         for bullet in self.player.weapon.bullets:
             if bullet.dead(self.map.enemies) or bullet.collide(self.map.wallArray, [self.camera.x, self.camera.y]) or bullet.living_time>50:
                 self.player.weapon.bullets.pop(self.player.weapon.bullets.index(bullet))
             bullet.move()
+        # next round
         if not self.map.enemies:
             self.round += 1
             self.map.nextRound(self.camera.x, self.camera.y, self.round)
@@ -94,13 +101,16 @@ class Game:
     def display(self):
         self.screen.fill(constants.GRAY)
         self.draw_grid()
+        # render all the elements with coordinate from camera
         self.map.render(self.screen, self.camera.x, self.camera.y, self.round)
         for enemy in self.map.enemies:
             self.screen.blit(enemy.sprite.image, (enemy.sprite.rect.x-self.camera.x, enemy.sprite.rect.y-self.camera.y))
         self.player.render(self.screen, self.camera.x, self.camera.y, self.round)
+        # Then update the camera from the player position
         self.camera.update(self.player, self.map.width, self.map.height)
         pg.display.flip()
 
+    # running the game
     def run(self):
         while self.running:
             self.handling_events()

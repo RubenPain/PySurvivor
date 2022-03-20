@@ -15,6 +15,7 @@ class Weapon:
         return dist
 
     def shoot(self, enemies):
+        # when the player shoot we should give to the bullet the direction of the nearest enemy
         dist = 99999
         enemy_coord = [0, 0]
         for enemy in enemies:
@@ -26,8 +27,9 @@ class Weapon:
         dirvect = pygame.math.Vector2(enemy_coord[0] - self.player.sprite.rect.x,
                                       enemy_coord[1]-self.player.sprite.rect.y)
         dirvect.normalize()
-        # Move along this normalized vector towards the player at current speed.
+
         dirvect.scale_to_length(1)
+        # we create the bullet and add it
         bullet = Bullet(self.player.sprite.rect.x, self.player.sprite.rect.y, dirvect)
         self.bullets.append(bullet)
         Sound().sound('attack.mp3')

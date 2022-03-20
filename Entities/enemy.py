@@ -7,6 +7,7 @@ class Enemy:
     def __init__(self, x, y, round):
         self.spritesheet = pygame.image.load('assets/squelette.png').convert_alpha()
         self.sprite = pygame.sprite.Sprite()
+        # split the spritesheet to use every sprite on it
         self.frames = []
         cols = 9
         rows = 4
@@ -33,6 +34,7 @@ class Enemy:
         if self.i >= 30:
             self.i = 0
 
+        # check collision, update position and sprite in consequence
         collision = self.collide(wallArray, cam_x, cam_y)
         if not collision:
             self.sprite.rect.x += dirvect.x
@@ -53,10 +55,12 @@ class Enemy:
                 self.sprite.rect.x -= dirvect.x
             else:
                 self.sprite.rect.y -= dirvect.y
+        # if the enemy if near to the player play a walk sound
         if -40 < player.sprite.rect.y - self.sprite.rect.y < 40 or -40 < player.sprite.rect.x - self.sprite.rect.x < 40:
             Sound().sound('walk.mp3')
 
     def collide(self, wallArray, cam_x, cam_y):
+        # walls are rendered in relation to camera position, so we need to add it when we check collision
         collision = False
 
         for wall in wallArray:

@@ -9,6 +9,7 @@ class Player:
         self.font = pygame.font.Font('freesansbold.ttf', 26)
         self.spritesheet = pygame.image.load('assets/spritesheet.png').convert_alpha()
         self.sprite = pygame.sprite.Sprite()
+        # split the spritesheet to use every sprite on it
         self.frames = []
         cols = 9
         rows = 4
@@ -34,6 +35,7 @@ class Player:
         self.sprite.rect.x += (-self.speed if self.direction[2] else 0) + (self.speed if self.direction[3] else 0)
         # increment in y direction
         self.sprite.rect.y += (-self.speed if self.direction[0] else 0) + (self.speed if self.direction[1] else 0)
+        # update sprite
         if self.i >= 30:
             self.i = 0
         if self.direction[2]:
@@ -47,6 +49,7 @@ class Player:
         self.i += 1
 
     def injury(self, enemies):
+        # check for each enemy collide, if he is alive, then adjust player life and text
         for enemy in enemies:
             if pygame.sprite.collide_mask(enemy.sprite, self.sprite) and enemy.life>0:
                 enemy.life = 0
@@ -57,6 +60,8 @@ class Player:
         return False
 
     def collide(self, wallArray, cam_x, cam_y, direction):
+        # walls are rendered in relation to camera position, so we need to add it when we check collision
+        # to avoid player block, if we collide we move back a little
         collision = False
         for wall in wallArray:
             wall.sprite.rect.x += cam_x
@@ -79,6 +84,7 @@ class Player:
         return collision
 
     def render(self, surface, cam_x, cam_y, rnd):
+        # render all the element in relation to the player + text
         for bullet in self.weapon.bullets:
             surface.blit(bullet.sprite.image, (bullet.sprite.rect.x+30-cam_x, bullet.sprite.rect.y+30-cam_y))
         surface.blit(self.sprite.image, (self.sprite.rect.x-cam_x, self.sprite.rect.y-cam_y))
